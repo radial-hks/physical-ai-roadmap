@@ -17,7 +17,7 @@
 1. **Isaac Sim**：官方支持 Windows，本机执行仿真、RTX 渲染、OpenUSD 场景组装应无障碍。
 2. **Isaac Lab**：以 Linux 为一等公民，Windows 支持可能有限制（待阶段 0 验证）；受阻则走 WSL2 或 Brev 云环境。
 3. **GR00T 微调 / 训练**：算力需求高，Windows 本地基本不可行，直接走云 GPU（Brev 等）。
-4. **LeRobot 遥操作**：Windows 可跑；物理机械臂环节依赖硬件（见 roadmap.md 决策点 D1）。
+4. **LeRobot 遥操作**：Windows 可跑；决策点 D1 已落地（2026-10-14）：不购置物理机械臂，实体操作环节以缺口文档化收口。
 5. **Jetson 部署**：需要 Jetson Thor 硬件；无硬件时以 Isaac ROS 工作流学习收口。
 
 ## 算力边界结论（阶段 3 摸底后填写）
