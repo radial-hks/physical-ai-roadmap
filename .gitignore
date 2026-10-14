@@ -1,0 +1,32 @@
+# Local environments and generated caches
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ipynb_checkpoints/
+.DS_Store
+
+# Credentials and machine-local settings
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Large experiment artifacts: reference them from results/
+artifacts/
+data/
+checkpoints/
+wandb/
+runs/
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+*.onnx
+*.mp4
+*.mov
+*.zip
+*.tar
+*.tar.gz
