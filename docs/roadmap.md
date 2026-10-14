@@ -1,166 +1,141 @@
-# Physical AI 学习路线图
+# Physical AI 六阶段学习路线图
 
-> 参考来源：NVIDIA Physical AI Learning Center（https://docs.nvidia.com/learning/physical-ai/）。
-> 约定：只写学习内容与时长估算，不设硬性日历日期；每个阶段以验收标准收口。决策点单独列出，调整时更新本文件并在 progress.md 记录。
+> 本路线定义学习要求；实际状态只维护在 [progress.md](progress.md)。官方资料与版本说明见 [resources.md](resources.md)，能力分级见 [learning-system.md](learning-system.md)。
 
-## 总览
+## 路线与投入
 
-```
-阶段 0  环境准备（Windows 基线确认 + Isaac Sim 安装）
-阶段 1  入门：Isaac Sim 基础 + Physical AI Agent Bootcamp
-阶段 2  OpenUSD 与数字孪生
-阶段 3  Isaac Lab 强化学习
-阶段 4  Sim-to-Real 与 VLA（GR00T）
-阶段 5  垂直领域与生态（Healthcare / GTC / 内化分享）
-```
+保留原有六阶段编号，增加基础门禁、数据评估和小型模仿学习；把硬件依赖、高算力实验与行业拓展从核心路径分离。
 
-各阶段课程时长合计约 40-50 小时（不含环境折腾与自主实践），按每周 5-8 小时节奏估算，整体为 2-3 个月量级，弹性推进。
+| 阶段 | 核心问题 | 项目 | 启动前提 | 自主学习投入估算 |
+|---|---|---|---|---|
+| 0 环境与基础 | 软件组合与目标机器是否具备运行条件？ | P0 环境证据 | 无；先盘点，不先安装全套 | 4–8h |
+| 1 Isaac Sim 基础 | 场景是否有可解释的物理与传感器行为？ | P1 物理场景 | P0；Python/坐标基础 | 10–16h |
+| 2 OpenUSD 与数字孪生 | 场景如何组合复用，数据如何被验证？ | P2 场景与小数据集 | P1；USD 基础阅读可提前 | 12–20h |
+| 3 Isaac Lab RL | 策略是否真正学到任务？ | P3 RL 训练评估 | P1；Lab 环境门禁；RL 基础 | 16–28h |
+| 4 模仿学习与 VLA | 示范数据如何成为动作，迁移边界在哪？ | P4 小型 BC + VLA 接口 | P3；数据划分和监督学习基础 | 10–18h |
+| 5 成果内化 | 能否复现、解释并分享实际成果？ | P5 复现包与总结 | P0–P4 核心证据 | 4–8h |
 
----
+上述 **56–98 小时**是本仓库的首轮规划估计，含定向阅读、最小实践和复盘，不是官方课时、不含长期环境排障/下载等待/重型条件实验，也不换算成完成日期。完成首批三个学习循环后按实耗调整，不能把课程卡片时长再机械相加。
 
-## 阶段 0：环境准备
+推荐顺序 0 → 1 → 2 → 3 → 4 → 5。USD 基础可与阶段 0 并行；阶段 3 使用官方任务时不必等自建场景全部就绪，但 P2 核心仍需独立验收。每个阶段详细产物见 [projects.md](projects.md)。
 
-**目标**：在 Windows 主力机上建立可运行的 Isaac Sim / Isaac Lab / LeRobot 基线环境，摸清本机算力边界。
+## 阶段 0：环境与基础门禁
 
-### 任务
+**目标**：获得一套已验证的最小仿真环境，而不是一次性装完所有 SDK。
 
-1. 基线确认：GPU 型号与显存、NVIDIA 驱动版本、磁盘空间（Isaac Sim 占用大）、WSL2 可用性。
-2. 安装 Isaac Sim（pip 安装 `isaacsim` 包或 Omniverse 方式，以官方当前推荐为准），记录版本号。
-3. 启动 Isaac Sim，确认 RTX 渲染 viewport 正常，截图留档。
-4. 安装 Isaac Lab，验证 Windows 支持状态（见 environment-windows.md 已知限制）；受阻则改走 WSL2 或 Brev 云环境。
-5. 准备 LeRobot（Hugging Face）Python 环境（阶段 4 遥操作要用）。
-6. AI coding agent 工具链复用：现有 VS Code + Copilot custom agents + MCP 流水线直接接入本方向，无需另建。
+**行动**：
 
-### 验收标准
+1. 盘点 Windows、GPU/RT Core/显存、驱动、RAM、磁盘和网络；先填 [环境基线](environment-windows.md)。
+2. 对照课程固定一组 Sim / Lab / Python 版本候选，再选 Workstation 或 pip 安装方式；不把所有 `latest` 拼装。
+3. 运行兼容检查与最小仿真，保存日志、关闭后重启。
+4. 补 Python 环境管理、单位/坐标变换；了解资产许可和实验证据规则。
+5. Lab 在阶段 3 前安装验证；LeRobot/GR00T 在阶段 4 条件触发时才建独立环境。
 
-- [ ] Isaac Sim 可启动并完成 RTX 渲染截图
-- [ ] Isaac Lab 或替代路径（WSL2 / Brev）确认可用
-- [ ] 本机算力边界结论写入 environment-windows.md（哪些环节本地跑、哪些走云）
+**G0 验收**：环境基线和版本来源可查；最小仿真可重复启动；运行证据与已知限制完整。只读文档或完成下载不算通过。
 
----
+若 RTX 环境受阻，可先做 usdview / USD API / 数学练习；P0 保持受阻，不把它们称为 Isaac Sim 替代验收。
 
-## 阶段 1：入门 — Isaac Sim 基础 + Agent Bootcamp
+## 阶段 1：Isaac Sim 基础与 Agent 方法
 
-**目标**：掌握 Isaac Sim 界面与仿真基础；用 AI agent 工作流完成第一批 OpenUSD / 仿真实践。
+**目标**：理解场景、刚体、碰撞、关节、控制周期与传感器。
 
-### 课程
+**核心资源**：[Building Your First Robot in Isaac Sim](https://docs.nvidia.com/learning/physical-ai/getting-started-with-isaac-sim/latest/building-your-first-robot-in-isaac-sim/index.html)。先完成机器人构建/运动/传感器模块，ROS 2 桥接后置；入门路径中的硬件在环（HIL）不纳入。
 
-- **Building Your First Robot in Isaac Sim**（入门，零基础）：界面、从零搭机器人、物理属性配置、加传感器、跑首次仿真。
-- **Physical AI Agent Bootcamp**（初级，自定节奏）：Patterned Prompt Method，用 AI coding agent 直接驱动 NVIDIA SDK / Omniverse Kit 库，渲染 OpenUSD 场景、验证 SimReady 资产、跑实时物理仿真。
+**行动**：
 
-### 实践任务
+1. 跑官方示例，检查单位、坐标、质量/摩擦、碰撞与关节限制。
+2. 保存最小场景并重开，添加一个传感器。
+3. 调整一个物理或控制参数，预测结果，再做对照验证。
+4. 记录一段 Agent 生成的脚本或配置的人工核验过程；比较提示中的目标、上下文和验收字段，不强行证明两种 Agent 方法等价。
 
-1. 完成两个课程全部 hands-on 环节（Windows 本机）。
-2. Agent Bootcamp 的 prompt 工作流与现有 Copilot custom agent 方法对比，沉淀一篇笔记（方法论同构性：patterned prompt vs custom agent 指令集）。
-3. 产出物入库：`results/` 目录存放渲染场景截图与 USD 资产验证记录。
+**G1 验收**：P1 场景可复现；运动与传感器输出一致；能解释坐标变换和一个单变量实验；Agent 参与过程有审阅记录。
 
-### 验收标准
+**条件实践**：Physical AI Agent Bootcamp。先核对本地说明、Agent 支持与 GPU 路径；按 RTX viewer → SimReady physics 顺序。验收 viewer、资产验证报告、修复前后物理证据，而非“三张截图”。完整 Bootcamp 受阻不阻塞 G1。
 
-- [ ] 自建机器人场景完成一次含传感器配置的仿真
-- [ ] 至少 3 个 OpenUSD 场景通过 agent 工作流渲染并留档
-- [ ] Agent 工作流方法笔记一篇
+## 阶段 2：OpenUSD、数字孪生方法与数据
 
----
+**目标**：组织可复用场景，并知道数据从哪里来、能用于证明什么。
 
-## 阶段 2：OpenUSD 与数字孪生
+**核心资源**：Learn OpenUSD 和 Assembling Digital Twins；传感器数据补充 Isaac Sim Replicator 官方样例，见资源页。
 
-**目标**：系统掌握 OpenUSD——数字孪生与工业自动化方向的基础标准。
+**行动**：
 
-### 课程
+1. 按 prim/stage → transform/units → layer/composition basics → reference/payload/variant → 组合强度/资产结构推进；不直接从高级 composition arcs 开始。
+2. P2 拆分机器人、桌面与装配层，创建两种变体，并检查相对路径与单位。
+3. 导出小批量 RGB 与 depth 或分割标注，保存数据 manifest 并抽检对齐。
+4. 说明视觉随机化、动力学随机化与真实标定的区别；没有现场数据时只称场景原型。
 
-- **Learn OpenUSD**（开源自学，初→高级）：USD 基础、资产结构、组合弧（composition arcs）、模块化、管线开发。
-- **Assembling Digital Twins**（中级，3-4h）：OpenUSD 场景组装、资产组织、管线开发。
+**G2 验收**：资产层次清晰、路径可迁移、变体可切换；有结构校验与数据抽检记录；能解释至少一种组合冲突。认证不作为通过条件。
 
-### 实践任务
-
-1. 按课程完成组合弧与资产模块化练习。
-2. 组装一个场景级数字孪生（题材自选，建议与 GIS/数字孪生兴趣结合，如小型场景孪生）。
-3. 评估是否参加 OpenUSD Development Professional 认证（决策点 D3）。
-
-### 验收标准
-
-- [ ] Learn OpenUSD 核心章节完成并留笔记
-- [ ] 一个完整数字孪生场景（USD 组合结构清晰、可复用资产模块化）
-- [ ] 认证去留有明确结论
-
----
+**选修**：高级 USD、GIS/UE 场景互通、性能优化、OpenUSD 认证（D3）。
 
 ## 阶段 3：Isaac Lab 强化学习
 
-**目标**：掌握 GPU 加速的并行策略训练——Isaac Lab 数千机器人并行、数小时收敛。
+**目标**：建立训练—保存—加载—评估闭环，不追求一开始就大规模并行。
 
-### 课程
+**核心资源**：Getting Started With Isaac Lab 的首个机器人训练模块（Cartpole）；RL 基础按需补齐。
 
-- **Getting Started With Isaac Lab**（中级，3-4h）：强化学习、GPU 加速、并行策略训练。
+**行动**：
 
-### 实践任务
+1. 核对 Lab 的任务注册、训练框架与 Python/Sim 版本，跑小规模 smoke test。
+2. 解释 observation、action、reward、reset、termination/truncation 和控制频率。
+3. 完成一个官方小任务训练与独立回放；有余力再迁移到 reach。
+4. 按 P3 协议比较随机/规则基线和策略，在固定评估预算下做一次单变量对照。
+5. 逐档增加并行环境数，记录吞吐、显存和失败点，形成 D2 的 RL 工作负载结论。
 
-1. 完成课程 hands-on：训练一个 RL 策略并在仿真中回放。
-2. 摸底本地 GPU 并行训练吞吐（环境数量上限），决定后续训练规模走本地还是云（决策点 D2）。
-3. 进阶选做：Newton 物理引擎、Franka 机械臂逆运动学、可变形缆线操作（Isaac for Healthcare 课程内容，提前摸一角）。
+**G3 验收**：P3 日志、配置、checkpoint 地址与评价表完整；新进程可回放；至少一次对照实验；成功率/回报的区别与负结果有说明。没有观测到提升也可作为学习结果，但不能写“策略有效”。
 
-### 验收标准
+**选修**：多训练种子、跨场景泛化、Newton、逆运动学和可变形物体。Newton 是独立课程，不再误列为 Healthcare 内容。
 
-- [ ] 一个 RL 策略完成训练 + 仿真回放
-- [ ] 本地训练吞吐摸底结论写入 environment-windows.md
+## 阶段 4：模仿学习、VLA 与 sim-to-real 边界
 
----
+**目标**：先做轻量、可验证的模仿学习，再按条件进入大模型与仿真部署；本阶段不承诺真实迁移。
 
-## 阶段 4：Sim-to-Real 与 VLA（GR00T）
+### 核心必修
 
-**目标**：打通「遥操作 → 数据增强 → VLA 微调 → sim-to-real 部署」完整链路。
+1. 理解 BC、RL、VLA 的输入输出与数据需求差异，梳理动作表示、时序/频率、归一化和分布偏移。
+2. 完成 P4 的小型状态输入 BC 训练与独立测试，按轨迹划分数据并做基线对比。可选 CPU 级小任务；不强制安装 LeRobot/robomimic 全栈。
+3. 阅读 GR00T 或 SO-101 的数据与仿真评估模块，画出语言/视觉/动作接口和 embodiment 对照；不把小型 BC 称为 VLA。
+4. 写出真实迁移缺口：标定、延迟、控制器、接触/摩擦、传感器差异、安全停止，以及哪些没有验证。
 
-### 课程
+**G4 验收**：小型 BC 的实际训练和测试证据；GR00T 接口说明；离线/仿真闭环/实体闭环边界清晰；实体部署明确未执行。只阅读大模型课程不能替代 BC 实验。
 
-- **GR00T E2E Workflow**（中级，4-12h）：Isaac GR00T、Isaac Lab-Arena、Isaac Teleop、Isaac ROS、Jetson Thor、Unitree G1。
-- **Sim-to-Real SO-101**（中级，6-10h）：LeRobot 遥操作、Isaac Sim 数字孪生仿真、Cosmos Transfer 场景增强、GR00T VLA 微调、sim-to-real 迁移原则。
-- **Seeed reBot 实战**（中级，20+h）：~~可选完整版~~ **D1 落地后不在本计划范围**（依赖物理机械臂与 Jetson 硬件），仅作概念参考。
+### 条件实践
 
-### 实践任务
+GR00T E2E（G1）与 SO-101 **择一**，不两套同时启动。先按课程版本锁依赖，验证已有数据与 checkpoint 可用，再做单次推理、仿真评价；微调需额外数据与算力门禁。
 
-1. LeRobot 遥操作环节（Windows 可跑；决策点 D1 已落地——**不购置物理机械臂**，涉及实体机械臂的操作环节以缺口文档化收口，仿真侧链路照常走通）。
-2. Isaac Sim 中构建对应数字孪生并做仿真验证。
-3. Cosmos Transfer 场景增强实验。
-4. GR00T VLA 微调：本地 GPU 基本不可行，走 Brev / 云 GPU（决策点 D2 落地）。
-5. 边缘部署（Jetson Thor / Isaac ROS）：无硬件则用文档化缺口收口，重点掌握 Isaac ROS 工作流概念。
+- G1 仿真可利用现成数据/模型，不代表能无设备自行遥操作；课程自采演示需要受支持的 XR 输入。
+- SO-101 的部分仿真遥操作仍需要遥操作臂；无臂时选已有数据/模型的评估支线。
+- Cosmos 生成、GR00T 微调和 ROS/边缘实装不是核心完成条件；付费训练未经批准不得启动。
+- Seeed reBot 实战、物理机械臂、Jetson 采购与实体机器人验证保持范围外。
 
-### 验收标准
+条件项关闭采用 [缺口模板](../templates/gap.md)，并说明少掌握的能力；不得写“全链路已走通”。
 
-- [ ] 遥操作 → 数字孪生 → 场景增强链路走通
-- [ ] 一次 GR00T 微调实验完成（本地或云）并记录配置与结果
-- [ ] sim-to-real 迁移笔记；Jetson 部署部分缺口文档化（如无硬件）
+## 阶段 5：成果内化与方向选择
 
----
+**目标**：把实际成果整理为他人可理解、可复现的知识，不以收集更多课程代替收口。
 
-## 阶段 5：垂直领域与生态
+**行动**：
 
-**目标**：垂直领域拓展 + 生态跟进 + 学习成果内化。
+1. 汇总 P0–P4 的代码/配置/证据，重新执行一个代表性实验并记录结果。
+2. 整理系统图、关键概念、失败案例和未验证能力，产出一篇教程或讲稿。
+3. 完成能力自评：能解释什么、能独立复现什么、下一次最小补齐动作是什么。
 
-### 内容
+**G5 验收**：P5 复现入口完整；已验证结论均有证据；阶段核心能力均有验收结论；选修/条件项的未完成不被隐藏。
 
-- **Isaac for Healthcare**（中级，3-4h）：医疗机器人、安全协议、领域适配；Newton 物理引擎深度实践。
-- **GTC Berlin 2026**（2026-10-20 至 10-22）：关注 RL 策略训练竞赛（CoreWeave 基础设施 + W&B）的会后资料与回放，竞赛形式本身值得研究。
-- 成果内化：将本方向学习整理为教程/分享，可并入 ai-tools-tutorial（radial-hks）系列。
+**拓展选修**：Healthcare（两个独立分支择一）、Newton、高级 USD、Isaac ROS 或 GTC 资料；围绕一个待解决的问题选一条，不设会议日期驱动的任务。对外发布和同步 ai-tools-tutorial 是独立后续动作。
 
-### 验收标准
+## 决策点
 
-- [ ] Isaac for Healthcare 完成
-- [ ] GTC 会后关键资料收集并归档
-- [ ] 一篇可分享的教程/总结产出
+这里维护决策范围与触发条件；当前状态、实际结论及日志见进度页。
 
----
-
-## 决策点（随推进逐个落地）
-
-| # | 决策 | 触发时机 | 当前倾向 |
+| ID | 决策范围 | 触发条件 | 约束 |
 |---|---|---|---|
-| D1 | ~~是否购置物理机械臂~~ **已落地（2026-10-14）：不购置** | — | 个人学习为基础；硬件投入属个人职业规划与公司战略规划层面的动作，不在本计划范围内。物理遥操作环节以缺口文档化收口，其余全链路（仿真侧）照常 |
-| D2 | 训练算力走本地还是云（Brev 等） | 阶段 0 摸底 + 阶段 3 吞吐结论 | 学习中依次跟进 |
-| D3 | 是否参加 OpenUSD 认证 | 阶段 2 结束 | 学习中依次跟进 |
-| D4 | 是否跟进 Jetson 硬件（Thor） | 阶段 4 边缘部署环节 | 学习中依次跟进 |
+| D1 | 物理机械臂 | 已有不购置决策，保持不变 | 不把实体遥操作/真实部署重新列为必修 |
+| D2 | 各工作负载本地还是云 | P0 盘点、P3 吞吐、P4 模型选择 | 仿真、RL、VLA 推理与微调分别评估；云需预算批准，不一刀切 |
+| D3 | OpenUSD 认证 | P2 后按收益评估 | 可延后或不参加，不阻塞核心阶段 |
+| D4 | Jetson / 边缘部署学习深度 | 阶段 4 边界分析 | 保留议题，但采购不在本计划；只评估概念学习或合格桌面环境的适配路径 |
 
 ## 调整约定
 
-- 每个阶段完成后：勾选验收项、在 progress.md 记录结论、需要时修订本文件。
-- 范围裁剪遵循既有偏好：弃低价值环节时文档化说明即收口，不无限补齐。
-- Windows 执行细节与已知限制统一见 `environment-windows.md`。
+核心受阻必须真实保留；条件/选修可有理由地裁剪。每次范围变化记录“原要求 → 新要求 → 原因 → 未获得能力”，不要删除历史决策。阶段通过后再加深项目，不因看到新模型/新课程重排整个主线。
